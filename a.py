@@ -12,3 +12,4 @@ def gugudan(a=2):
     return 
 
 gugudan()
+gugudan(7)
