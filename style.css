@@ -34,6 +34,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 body {
@@ -51,47 +52,62 @@ body {
     );
   color: var(--ink);
   font-family: var(--font-body);
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ---------------- Header ---------------- */
 
 .page-header {
+  flex: 0 0 auto;
   max-width: 900px;
   margin: 0 auto;
-  padding: 56px 24px 28px;
+  padding: clamp(10px, 3vh, 30px) 24px clamp(4px, 1.2vh, 14px);
   text-align: center;
 }
 
 .page-header__eyebrow {
-  margin: 0 0 6px;
-  font-size: 15px;
+  margin: 0 0 4px;
+  font-size: clamp(12px, 1.4vh, 15px);
   color: var(--ink-soft);
 }
 
 .page-header h1 {
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(22px, 3.4vh, 40px);
   letter-spacing: -0.01em;
 }
 
 .page-header__hint {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: clamp(12px, 1.4vh, 15px);
 }
 
 /* ---------------- Grid ---------------- */
+/* 18명 = 6열 x 3행 기준. 아이 수가 바뀌면 --cols / --rows 와
+   grid-template-columns/rows 값을 함께 맞춰주세요. */
 
 .grid {
-  max-width: 1180px;
+  --cols: 6;
+  --rows: 3;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 12px 32px 80px;
+  padding: 0 clamp(16px, 3vw, 48px) clamp(8px, 1.6vh, 18px);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 40px 24px;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  align-items: center;
+  justify-items: center;
+  gap: clamp(4px, 1.2vh, 16px) clamp(8px, 1.6vw, 24px);
+  overflow: hidden;
 }
 
 .card {
@@ -101,17 +117,21 @@ body {
   font: inherit;
   color: inherit;
   cursor: pointer;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: clamp(4px, 1vh, 12px);
   -webkit-tap-highlight-color: transparent;
 }
 
 .card__photo-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: min(12.5vw, 22vh, 175px);
+  height: min(12.5vw, 22vh, 175px);
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,8 +177,9 @@ body {
 
 .card__name {
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: clamp(12px, 1.6vh, 18px);
   line-height: 1;
+  flex: 0 0 auto;
 }
 
 .card:hover .card__photo,
@@ -285,10 +306,44 @@ body {
   max-height: 100vh;
   width: auto;
   height: auto;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.stage.is-loading .stage__img {
+  opacity: 0;
 }
 
 .stage__img[hidden] {
   display: none;
+}
+
+.stage__loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+}
+
+.stage.is-loading .stage__loading {
+  display: flex;
+}
+
+.stage__spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--sun);
+  animation: stage-spin 0.85s linear infinite;
+}
+
+@keyframes stage-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .stage__fallback {
@@ -321,12 +376,46 @@ body {
 }
 
 /* ---------------- Responsive ---------------- */
+/* 화면이 좁거나 낮으면 한 페이지에 욱여넣지 않고
+   편하게 스크롤해서 볼 수 있도록 원래의 흐름형 그리드로 전환합니다. */
 
-@media (max-width: 520px) {
+@media (max-width: 700px), (max-height: 560px) {
+  html,
+  body {
+    height: auto;
+  }
+
+  body {
+    overflow: visible;
+    display: block;
+  }
+
+  .page-header {
+    padding: 32px 24px 20px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(26px, 6vw, 40px);
+  }
+
   .grid {
+    flex: none;
+    max-width: 1180px;
+    padding: 12px 20px 60px;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 30px 16px;
-    padding: 8px 18px 60px;
+    grid-template-rows: none;
+    gap: 28px 16px;
+    overflow: visible;
+  }
+
+  .card,
+  .card__photo-wrap {
+    width: 100%;
+    height: auto;
+  }
+
+  .card__photo-wrap {
+    aspect-ratio: 1 / 1;
   }
 
   .card__name {
@@ -341,7 +430,12 @@ body {
   .card__blob,
   .stage,
   .stage__figure,
-  .stage__close {
+  .stage__close,
+  .stage__img {
     transition: none !important;
+  }
+
+  .stage__spinner {
+    animation-duration: 2.2s;
   }
 }

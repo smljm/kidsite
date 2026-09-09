@@ -14,24 +14,24 @@
 // ==========================================================
 
 const KIDS = [
-  { id: "na-geun",   label: "나근" },
-  { id: "do-geun",   label: "도근" },
-  { id: "do-yun",    label: "도윤" },
-  { id: "dong-woo",  label: "동우" },
-  { id: "ra-yun",    label: "라윤" },
-  { id: "min-jun",   label: "민준" },
-  { id: "seo-yun",   label: "서윤" },
-  { id: "song-ha",   label: "송하" },
-  { id: "a-jung",    label: "아중" },
-  { id: "yeon-woo",  label: "연우" },
-  { id: "yu-dam",    label: "유담" },
-  { id: "yu-jun",    label: "유준" },
+  { id: "na-geun", label: "나근" },
+  { id: "do-geun", label: "도근" },
+  { id: "do-yun", label: "도윤" },
+  { id: "dong-woo", label: "동우" },
+  { id: "ra-yun", label: "라윤" },
+  { id: "min-jun", label: "민준" },
+  { id: "seo-yun", label: "서윤" },
+  { id: "song-ha", label: "송하" },
+  { id: "a-jung", label: "아중" },
+  { id: "yeon-woo", label: "연우" },
+  { id: "yu-dam", label: "유담" },
+  { id: "yu-jun", label: "유준" },
   { id: "ju-hyeong", label: "주형" },
-  { id: "ji-min",    label: "지민" },
-  { id: "ji-yu",     label: "지유" },
-  { id: "chae-eun",  label: "채은" },
-  { id: "tae-yul",   label: "태율" },
-  { id: "ha-yun",    label: "하윤" },
+  { id: "ji-min", label: "지민" },
+  { id: "ji-yu", label: "지유" },
+  { id: "chae-eun", label: "채은" },
+  { id: "tae-yul", label: "태율" },
+  { id: "ha-yun", label: "하윤" },
 ].map((kid) => ({
   ...kid,
   profile: `images/profile/${kid.id}.jpg`,
@@ -72,7 +72,9 @@ function buildGrid() {
 
 function openStage(kid) {
   stage.classList.remove("has-error");
+  stage.classList.add("is-loading");
   stageImg.hidden = false;
+  stageImg.src = ""; // 이전 사진과 같은 주소여도 항상 load/error 이벤트가 다시 발생하도록 초기화
   stageImg.src = kid.full;
   stageImg.alt = `${kid.label} 전신 사진`;
   stageName.textContent = kid.label;
@@ -89,9 +91,15 @@ function closeStage() {
   document.body.style.overflow = "";
 }
 
+// 전신 사진 다운로드가 끝나면 로딩 표시를 감추고 사진을 보여줌
+stageImg.addEventListener("load", () => {
+  stage.classList.remove("is-loading");
+});
+
 // 전신 gif가 아직 없을 때(images/full 폴더에 파일이 없을 때) 안내 문구 표시
 stageImg.addEventListener("error", () => {
   if (!stageImg.src) return;
+  stage.classList.remove("is-loading");
   stage.classList.add("has-error");
   stageImg.hidden = true;
 });
