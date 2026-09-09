@@ -13,3 +13,14 @@ def gugudan(a=2):
 
 gugudan()
 gugudan(7)
+
+def gugudan_grid(start, end):
+    dans = list(range(start, end + 1))
+    for start in range(0, len(dans), 4):
+        rowdans = dans[start:start + 4]
+        for b in range(1, 10):
+            line = ""
+            for d in rowdans:
+                line += "%d x %d = %2d\t" % (d, b, d * b)
+            print(line)
+        print()  
