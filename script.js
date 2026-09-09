@@ -6,17 +6,18 @@
 //    영문 id로 사진을 연결하도록 만들었어요)
 //
 // 아이를 추가/삭제하려면 아래 KIDS 배열만 수정하면 됩니다.
-//   id      : 영문 파일 이름 (사진 파일명과 정확히 같아야 함)
-//   label   : 화면에 보일 이름표 글자
-//   facePos : (선택) 얼굴이 사진 속 어디쯯 있는지 다시 맞추고 싶으면
-//             "가로% 세로%" 형태로 넣어주세요. 기본값은 "50% 15%" (거의 맨 위).
+//   id    : 영문 파일 이름 (사진 파일명과 정확히 같아야 함)
+//   label : 화면에 보일 이름표 글자
 //
-// profile: 그리드에 처음 보일 얼굴 사진      -> images/profile/아이디.jpg
-// full   : 클릭했을 때 보일 전신 사진(gif)   -> images/full/아이디.gif
+// profile: 그리드에 기본으로 보일 얼굴 사진   -> images/profile/아이디.jpg
+// face   : 직접 얼굴만 잘라서 만든 확대샷     -> images/face/아이디.jpg
+// full   : 클릭했을 때 보일 전신 사진(gif)    -> images/full/아이디.gif
 //
-// ※ images/full 에 그 아이의 gif가 실제로 올라와 있으면, 그리드 사진이
-//   자동으로 그 gif의 얼굴 확대샷으로 바뀝니다. 손으로 켜고 끌 필요 없어요.
-//   gif가 없으면 그냥 조용히 얼굴 jpg로 남아있어요.
+// ※ 아이 사진을 한 번 클릭해서 전체화면으로 열어보면, 그 순간부터
+//   그리드 프로필 사진이 자동으로 images/face의 확대샷으로 바뀝니다.
+//   이 "열어봤음" 기록은 이 브라우저에 저장돼서, 나중에 창을 닫았다
+//   다시 열어도 그대로 유지돼요(단, 다른 컴퓨터/브라우저에서는 안 넘어가요).
+//   images/face에 파일이 아직 없으면 클릭해도 조용히 원래 얼굴 jpg 그대로예요.
 // ==========================================================
 
 const KIDS = [
@@ -41,6 +42,7 @@ const KIDS = [
 ].map((kid) => ({
   ...kid,
   profile: `images/profile/${kid.id}.jpg`,
+  face: `images/face/${kid.id}.jpg`,
   full: `images/full/${kid.id}.gif`,
 }));
 
@@ -62,10 +64,43 @@ function whenIdle(fn) {
   }
 }
 
+// "한 번 열어봤음" 기록 — 이 브라우저(이 컴퓨터)에만 저장돼요.
+function isViewed(id) {
+  try {
+    return localStorage.getItem(`kidsite-viewed-${id}`) === "1";
+  } catch (e) {
+    return false; // 시크릿 모드 등으로 저장이 막혀있으면 그냥 매번 원래 사진으로
+  }
+}
+
+function markViewed(id) {
+  try {
+    localStorage.setItem(`kidsite-viewed-${id}`, "1");
+  } catch (e) {
+    /* 저장이 안 되면 조용히 무시 (그리드 사진 전환만 안 될 뿐, 사이트는 정상 동작) */
+  }
+}
+
+// images/face에 그 아이 확대샷이 실제로 있으면 그리드 사진을 그걸로 교체.
+// 파일이 없으면 아무 일도 안 일어나고 원래 얼굴 jpg 그대로 남음.
+function swapToFace(kid, card) {
+  const img = card.querySelector(".card__photo");
+  if (img.dataset.faceApplied === "1") return;
+  const preload = new Image();
+  preload.onload = () => {
+    img.style.opacity = "0";
+    window.setTimeout(() => {
+      img.src = kid.face;
+      img.style.opacity = "1";
+      img.dataset.faceApplied = "1";
+    }, 150);
+  };
+  preload.src = kid.face;
+}
+
 function buildGrid() {
   KIDS.forEach((kid, i) => {
     const accent = ACCENTS[i % ACCENTS.length];
-    const facePos = kid.facePos || "50% 15%";
 
     const card = document.createElement("button");
     card.className = "card";
@@ -83,25 +118,18 @@ function buildGrid() {
       <span class="card__name">${kid.label}</span>
     `;
 
-    card.addEventListener("click", () => openStage(kid));
+    card.addEventListener("click", () => {
+      openStage(kid);
+      markViewed(kid.id);
+      swapToFace(kid, card);
+    });
     grid.appendChild(card);
 
-    // 얼굴 사진(jpg)이 먼저 빨리 뜨게 하고, 여유 있을 때 gif가 실제로
-    // 있는지 조용히 확인해서 있으면 얼굴 확대샷으로 바꿔줌.
-    whenIdle(() => {
-      const preload = new Image();
-      preload.onload = () => {
-        const img = card.querySelector(".card__photo");
-        img.style.opacity = "0";
-        window.setTimeout(() => {
-          img.src = kid.full;
-          img.style.objectPosition = facePos;
-          img.classList.add("card__photo--zoom");
-          img.style.opacity = "1";
-        }, 150);
-      };
-      preload.src = kid.full;
-    });
+    // 예전에 이미 열어봤던 아이라면(이 브라우저 기준) 이번에 열 때도
+    // 그리드 사진을 자동으로 확대샷으로 미리 바꿔둠.
+    if (isViewed(kid.id)) {
+      whenIdle(() => swapToFace(kid, card));
+    }
   });
 }
 

@@ -170,12 +170,6 @@ body {
     opacity 0.25s ease;
 }
 
-/* confirmed(전신 gif 확인됨) 아이는 얼굴 쪽으로 확대해서 보여줘요.
-   아이마다 사진 속 얼굴 위치가 다르면 script.js의 facePos 값을 조정하세요. */
-.card__photo--zoom {
-  transform: scale(2.2);
-}
-
 .card__pin {
   position: absolute;
   top: 2%;
