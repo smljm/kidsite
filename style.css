@@ -147,17 +147,31 @@ body {
     transform 0.35s ease;
 }
 
-.card__photo {
+.card__frame {
   position: relative;
   width: 82%;
   height: 82%;
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-photo);
-  object-fit: cover;
+  overflow: hidden;
   background: #eee;
   border: 4px solid var(--card-bg);
   box-shadow: 0 6px 16px rgba(58, 46, 42, 0.16);
   transition: transform 0.35s ease;
+}
+
+.card__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+/* confirmed(전신 gif 확인됨) 아이는 얼굴 쪽으로 확대해서 보여줘요.
+   아이마다 사진 속 얼굴 위치가 다르면 script.js의 facePos 값을 조정하세요. */
+.card__photo--zoom {
+  transform: scale(2.2);
 }
 
 .card__pin {
@@ -182,8 +196,8 @@ body {
   flex: 0 0 auto;
 }
 
-.card:hover .card__photo,
-.card:focus-visible .card__photo {
+.card:hover .card__frame,
+.card:focus-visible .card__frame {
   transform: translateY(-4px) scale(1.03);
 }
 
