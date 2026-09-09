@@ -165,7 +165,9 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition:
+    transform 0.35s ease,
+    opacity 0.25s ease;
 }
 
 /* confirmed(전신 gif 확인됨) 아이는 얼굴 쪽으로 확대해서 보여줘요.
