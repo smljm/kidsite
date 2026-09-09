@@ -15,9 +15,9 @@
 //
 // ※ 아이 사진을 한 번 클릭해서 전체화면으로 열어보면, 그 순간부터
 //   그리드 프로필 사진이 자동으로 images/face의 확대샷으로 바뀝니다.
-//   이 "열어봤음" 기록은 이 브라우저에 저장돼서, 나중에 창을 닫았다
-//   다시 열어도 그대로 유지돼요(단, 다른 컴퓨터/브라우저에서는 안 넘어가요).
-//   images/face에 파일이 아직 없으면 클릭해도 조용히 원래 얼굴 jpg 그대로예요.
+//   단, 이건 지금 열어본 페이지에서만 유지돼요 — 새로고침하면 전부
+//   원래 얼굴 jpg로 초기화돼요. images/face에 파일이 아직 없으면
+//   클릭해도 조용히 원래 얼굴 jpg 그대로예요.
 // ==========================================================
 
 const KIDS = [
@@ -54,32 +54,6 @@ const stageImg = document.getElementById("stageImg");
 const stageName = document.getElementById("stageName");
 const stageFallback = document.getElementById("stageFallback");
 const stageClose = document.getElementById("stageClose");
-
-// requestIdleCallback이 없는 브라우저(구형 Safari 등)를 위한 대체
-function whenIdle(fn) {
-  if ("requestIdleCallback" in window) {
-    requestIdleCallback(fn, { timeout: 2500 });
-  } else {
-    setTimeout(fn, 400);
-  }
-}
-
-// "한 번 열어봤음" 기록 — 이 브라우저(이 컴퓨터)에만 저장돼요.
-function isViewed(id) {
-  try {
-    return localStorage.getItem(`kidsite-viewed-${id}`) === "1";
-  } catch (e) {
-    return false; // 시크릿 모드 등으로 저장이 막혀있으면 그냥 매번 원래 사진으로
-  }
-}
-
-function markViewed(id) {
-  try {
-    localStorage.setItem(`kidsite-viewed-${id}`, "1");
-  } catch (e) {
-    /* 저장이 안 되면 조용히 무시 (그리드 사진 전환만 안 될 뿐, 사이트는 정상 동작) */
-  }
-}
 
 // images/face에 그 아이 확대샷이 실제로 있으면 그리드 사진을 그걸로 교체.
 // 파일이 없으면 아무 일도 안 일어나고 원래 얼굴 jpg 그대로 남음.
@@ -120,16 +94,9 @@ function buildGrid() {
 
     card.addEventListener("click", () => {
       openStage(kid);
-      markViewed(kid.id);
       swapToFace(kid, card);
     });
     grid.appendChild(card);
-
-    // 예전에 이미 열어봤던 아이라면(이 브라우저 기준) 이번에 열 때도
-    // 그리드 사진을 자동으로 확대샷으로 미리 바꿔둠.
-    if (isViewed(kid.id)) {
-      whenIdle(() => swapToFace(kid, card));
-    }
   });
 }
 
