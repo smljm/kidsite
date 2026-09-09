@@ -70,7 +70,7 @@ body {
 
 .page-header__eyebrow {
   margin: 0 0 4px;
-  font-size: clamp(12px, 1.4vh, 15px);
+  font-size: clamp(16px, 1.8vh, 19px);
   color: var(--ink-soft);
 }
 
