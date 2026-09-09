@@ -1,41 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-<meta name="robots" content="noindex, nofollow">
-=======
->>>>>>> b4b4e8d (폴더 구조 정리: root로 이동)
-<title>우리반 친구들</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>우리반 친구들</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <p class="page-header__eyebrow">🌼 오늘 우리반에는</p>
+      <h1>18명의 친구들이 있어요</h1>
+      <p class="page-header__hint">
+        사진을 톡 누르면 친구 전체 모습을 볼 수 있어요
+      </p>
+    </header>
 
-<header class="page-header">
-  <p class="page-header__eyebrow">🌼 오늘 우리반에는</p>
-  <h1>18명의 친구들이 있어요</h1>
-  <p class="page-header__hint">사진을 톡 누르면 친구 전체 모습을 볼 수 있어요</p>
-</header>
+    <main class="grid" id="grid"></main>
 
-<main class="grid" id="grid"></main>
+    <section class="stage" id="stage" aria-hidden="true">
+      <div class="stage__glow"></div>
+      <button
+        class="stage__close"
+        id="stageClose"
+        type="button"
+        aria-label="닫기"
+      >
+        ✕
+      </button>
 
-<section class="stage" id="stage" aria-hidden="true">
-  <div class="stage__glow"></div>
-  <button class="stage__close" id="stageClose" type="button" aria-label="닫기">✕</button>
+      <figure class="stage__figure">
+        <div class="stage__frame">
+          <img class="stage__img" id="stageImg" src="" alt="" />
+          <p class="stage__fallback" id="stageFallback">
+            전신 사진을 준비하고 있어요
+          </p>
+        </div>
+        <figcaption class="stage__name" id="stageName"></figcaption>
+      </figure>
+    </section>
 
-  <figure class="stage__figure">
-    <div class="stage__frame">
-      <img class="stage__img" id="stageImg" src="" alt="">
-      <p class="stage__fallback" id="stageFallback">전신 사진을 준비하고 있어요</p>
-    </div>
-    <figcaption class="stage__name" id="stageName"></figcaption>
-  </figure>
-</section>
-
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
