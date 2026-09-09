@@ -18,9 +18,9 @@
 // ==========================================================
 
 const KIDS = [
-  { id: "na-geun", label: "나근", confirmed: false },
+  { id: "na-geun", label: "나근", confirmed: true },
   { id: "do-geun", label: "도근", confirmed: false },
-  { id: "do-yun", label: "도윤", confirmed: false },
+  { id: "do-yun", label: "도윤", confirmed: true },
   { id: "dong-woo", label: "동우", confirmed: false },
   { id: "ra-yun", label: "라윤", confirmed: false },
   { id: "min-jun", label: "민준", confirmed: false },
