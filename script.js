@@ -15,30 +15,32 @@
 //
 // ※ 아이 사진을 한 번 클릭해서 전체화면으로 열어보면, 그 순간부터
 //   그리드 프로필 사진이 자동으로 images/face의 확대샷으로 바뀝니다.
-//   단, 이건 지금 열어본 페이지에서만 유지돼요 — 새로고침하면 전부
-//   원래 얼굴 jpg로 초기화돼요. images/face에 파일이 아직 없으면
-//   클릭해도 조용히 원래 얼굴 jpg 그대로예요.
+//   이 "열어봤음" 기록은 이 컴퓨터의 이 브라우저에 저장되기 때문에,
+//   새로고침하거나 나중에 다시 들어와도 계속 유지돼요.
+//   (다른 컴퓨터/브라우저에서 열면 거기서는 처음부터 다시 시작돼요)
+//   오른쪽 위 "사진 초기화" 버튼을 누르면 전부 원래 얼굴 jpg로 돌아가요.
+//   images/face에 파일이 아직 없으면 클릭해도 조용히 원래 얼굴 jpg 그대로예요.
 // ==========================================================
 
 const KIDS = [
-  { id: "na-geun", label: "나근" },
-  { id: "do-geun", label: "도근" },
-  { id: "do-yun", label: "도윤" },
-  { id: "dong-woo", label: "동우" },
-  { id: "ra-yun", label: "라윤" },
-  { id: "min-jun", label: "민준" },
-  { id: "seo-yun", label: "서윤" },
-  { id: "song-ha", label: "송하" },
-  { id: "a-jung", label: "아중" },
-  { id: "yeon-woo", label: "연우" },
-  { id: "yu-dam", label: "유담" },
-  { id: "yu-jun", label: "유준" },
+  { id: "na-geun",   label: "나근" },
+  { id: "do-geun",   label: "도근" },
+  { id: "do-yun",    label: "도윤" },
+  { id: "dong-woo",  label: "동우" },
+  { id: "ra-yun",    label: "라윤" },
+  { id: "min-jun",   label: "민준" },
+  { id: "seo-yun",   label: "서윤" },
+  { id: "song-ha",   label: "송하" },
+  { id: "a-jung",    label: "아중" },
+  { id: "yeon-woo",  label: "연우" },
+  { id: "yu-dam",    label: "유담" },
+  { id: "yu-jun",    label: "유준" },
   { id: "ju-hyeong", label: "주형" },
-  { id: "ji-min", label: "지민" },
-  { id: "ji-yu", label: "지유" },
-  { id: "chae-eun", label: "채은" },
-  { id: "tae-yul", label: "태율" },
-  { id: "ha-yun", label: "하윤" },
+  { id: "ji-min",    label: "지민" },
+  { id: "ji-yu",     label: "지유" },
+  { id: "chae-eun",  label: "채은" },
+  { id: "tae-yul",   label: "태율" },
+  { id: "ha-yun",    label: "하윤" },
 ].map((kid) => ({
   ...kid,
   profile: `images/profile/${kid.id}.jpg`,
@@ -54,6 +56,26 @@ const stageImg = document.getElementById("stageImg");
 const stageName = document.getElementById("stageName");
 const stageFallback = document.getElementById("stageFallback");
 const stageClose = document.getElementById("stageClose");
+const resetBtn = document.getElementById("resetBtn");
+
+const VIEWED_PREFIX = "kidsite-viewed-";
+
+// "한 번 열어봤음" 기록 — 이 브라우저(이 컴퓨터)에만 저장돼요.
+function isViewed(id) {
+  try {
+    return localStorage.getItem(VIEWED_PREFIX + id) === "1";
+  } catch (e) {
+    return false; // 시크릿 모드 등으로 저장이 막혀있으면 그냥 매번 원래 사진으로
+  }
+}
+
+function markViewed(id) {
+  try {
+    localStorage.setItem(VIEWED_PREFIX + id, "1");
+  } catch (e) {
+    /* 저장이 안 되면 조용히 무시 (그리드 사진 전환만 안 될 뿐, 사이트는 정상 동작) */
+  }
+}
 
 // images/face에 그 아이 확대샷이 실제로 있으면 그리드 사진을 그걸로 교체.
 // 파일이 없으면 아무 일도 안 일어나고 원래 얼굴 jpg 그대로 남음.
@@ -94,11 +116,29 @@ function buildGrid() {
 
     card.addEventListener("click", () => {
       openStage(kid);
+      markViewed(kid.id);
       swapToFace(kid, card);
     });
     grid.appendChild(card);
+
+    // 예전에 이미 열어봤던 아이라면(이 브라우저 기준) 이번에도 자동으로 확대샷을 보여줌
+    if (isViewed(kid.id)) {
+      swapToFace(kid, card);
+    }
   });
 }
+
+// "사진 초기화" 버튼 — 열어봤음 기록을 전부 지우고 원래 얼굴 사진으로 되돌림
+resetBtn.addEventListener("click", () => {
+  const ok = window.confirm("확인한 아이들의 프로필 사진을 전부 원래 얼굴 사진으로 되돌릴까요?");
+  if (!ok) return;
+  try {
+    KIDS.forEach((kid) => localStorage.removeItem(VIEWED_PREFIX + kid.id));
+  } catch (e) {
+    /* 저장소 접근이 안 되면 그냥 무시 */
+  }
+  location.reload();
+});
 
 function openStage(kid) {
   stage.classList.remove("has-error");
